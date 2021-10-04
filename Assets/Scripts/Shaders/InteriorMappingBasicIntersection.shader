@@ -85,12 +85,14 @@ Shader "Custom/InteriorMappingBasicIntersection"
 			//colorAndDist.w is the shortest distance to a wall so far so we can find which wall is the closest
 			float4 intersectPosAndDist = float4(float3(1, 1, 1), 100000000.0);
 
+			float3 cellID = getCellID(rayStartPos, float3(distanceBetweenWalls, distanceBetweenFloors, distanceBetweenWalls));
+
 			//Intersection 1: Wall / roof (y)
 			//Camera is looking up if the dot product is > 0 = Roof
 			if (dot(upVec, rayDir) > 0)
 			{
 				//The local position of the roof
-				float3 wallPos = (ceil(rayStartPos.y / distanceBetweenFloors) * distanceBetweenFloors) * upVec;
+				float3 wallPos = (cellID.y * distanceBetweenFloors) * upVec;
 
 				//Check if the roof is intersecting with the ray, if so set the color and the distance to the roof and return it
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, upVec, intersectPosAndDist);
@@ -99,7 +101,7 @@ Shader "Custom/InteriorMappingBasicIntersection"
 			//Floor
 			else
 			{
-				float3 wallPos = ((ceil(rayStartPos.y / distanceBetweenFloors) - 1.0) * distanceBetweenFloors) * upVec;
+				float3 wallPos = ((cellID.y - 1.0) * distanceBetweenFloors) * upVec;
 
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, upVec * -1, intersectPosAndDist);
 			}
@@ -108,13 +110,13 @@ Shader "Custom/InteriorMappingBasicIntersection"
 			//Intersection 2: Right wall (x)
 			if (dot(rightVec, rayDir) > 0)
 			{
-				float3 wallPos = (ceil(rayStartPos.x / distanceBetweenWalls) * distanceBetweenWalls) * rightVec;
+				float3 wallPos = (cellID.x * distanceBetweenWalls) * rightVec;
 
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, rightVec, intersectPosAndDist);
 			}
 			else
 			{
-				float3 wallPos = ((ceil(rayStartPos.x / distanceBetweenWalls) - 1.0) * distanceBetweenWalls) * rightVec;
+				float3 wallPos = ((cellID.x - 1.0) * distanceBetweenWalls) * rightVec;
 
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, rightVec * -1, intersectPosAndDist);
 			}
@@ -123,13 +125,13 @@ Shader "Custom/InteriorMappingBasicIntersection"
 			//Intersection 3: Forward wall (z)
 			if (dot(forwardVec, rayDir) > 0)
 			{
-				float3 wallPos = (ceil(rayStartPos.z / distanceBetweenWalls) * distanceBetweenWalls) * forwardVec;
+				float3 wallPos = (cellID.z * distanceBetweenWalls) * forwardVec;
 
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, forwardVec, intersectPosAndDist);
 			}
 			else
 			{
-				float3 wallPos = ((ceil(rayStartPos.z / distanceBetweenWalls) - 1.0) * distanceBetweenWalls) * forwardVec;
+				float3 wallPos = ((cellID.z - 1.0) * distanceBetweenWalls) * forwardVec;
 
 				intersectPosAndDist = checkIfCloser(rayDir, rayStartPos, wallPos, forwardVec * -1, intersectPosAndDist);
 			}

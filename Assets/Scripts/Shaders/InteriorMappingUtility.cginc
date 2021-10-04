@@ -6,6 +6,11 @@ static float3 upVec = float3(0, 1, 0);
 static float3 rightVec = float3(1, 0, 0);
 static float3 forwardVec = float3(0, 0, 1);
 
+float3 getCellID(float3 position, float3 division) {
+	float3 id = ceil(position / division);
+	return id;
+}
+
 //Calculate the distance between the ray start position and where it's intersecting with the plane
 		//If this distance is shorter than the previous best distance, the save it and the color belonging to the wall and return it
 float4 checkIfCloser(float3 rayDir, float3 rayStartPos, float3 planePos, float3 planeNormal, float4 intersectPosAndDist)
